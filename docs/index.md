@@ -27,7 +27,15 @@ This write-up is my summary of the issues that mattered most, the submissions th
 
 The contest centered on a compact layered stack: the Solidity payout contract in `TreasureHunt.sol`, the Noir circuit in `circuits/src/main.nr`, the generated Honk verifier, and the surrounding deployment and fixture-generation scripts. The intended protocol flow was straightforward. A participant finds a real-world treasure, learns a secret, generates a proof off-chain, and submits a claim on-chain to receive a fixed ETH reward. The README explicitly frames the protocol around ten treasures, ten claims, and a funded reward pool, while the contract and circuit are supposed to enforce uniqueness, proof validity, and payout safety.
 
-![alt text](treasure_hunt.png)
+
+<p align="center">
+  <a href="treasure_hunt.png" target="_blank">
+    <img src="treasure_hunt.png" width="700">
+  </a>
+  <br>
+  <em>Figure 1: Protocol diagram.</em>
+</p>
+
 
 What made the contest interesting is that nearly every part of that story contained a fault line. Some were obvious once spotted, like the duplicate-claim bug. Others were more structural, like the gap between the circuit’s intended secrecy model and what the repository actually exposed. A few were operational rather than purely logical, but were still severe enough to matter because a protocol that cannot be deployed or safely operated is broken in a very practical sense. 
 
@@ -300,7 +308,15 @@ That result lines up with the verifier code. Although some internal arithmetic r
 
 # Visual summary of high and medium findings
 
-![alt text](attack_surface_mapped.png)
+
+<p align="center">
+  <a href="attack_surface_mapped.png" target="_blank">
+    <img src="attack_surface_mapped.png" width="700">
+  </a>
+  <br>
+  <em>Figure 2: Attack surface mapping across off-chain and on-chain components.</em>
+</p>
+
 
 Why deployment is considered part of the on-chain attack surface? Although deployment is initiated off-chain by the operator, it is included in the on-chain attack surface because it directly determines the initial on-chain state, configuration, and security guarantees of the protocol.
 In this system, deployment is not a passive step. It is an active transaction that creates and configures contracts on-chain, sets the verifier address, funds the contract, and establishes key invariants (such as reward availability and verifier correctness). Any mistake or weakness at this stage becomes permanently embedded into the deployed system.
